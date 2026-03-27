@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useTurnos } from "../context/TurnosContext";
 
 export default function AdminPage() {
-  const { turnos, horarios, agregarHorario, eliminarHorario, confirmarTurno, cancelarTurno } = useTurnos();
+  const { turnos, horarios, agregarHorario, eliminarHorario, confirmarTurno, cancelarTurno, logout } = useTurnos();
   const [form, setForm] = useState({ fecha: "", hora: "" });
   const [vista, setVista] = useState("turnos");
 
-  function handleAgregarHorario(e) {
+  async function handleAgregarHorario(e) {
     e.preventDefault();
     if (!form.fecha || !form.hora) return;
-    agregarHorario(form);
+    await agregarHorario(form);
     setForm({ fecha: "", hora: "" });
   }
 
@@ -32,7 +32,15 @@ export default function AdminPage() {
             <h1 className="text-2xl font-bold text-gray-800">Panel de Fiore</h1>
             <p className="text-gray-400 text-sm">Mates con Fiore — administración</p>
           </div>
-          <a href="/" className="text-sm text-blue-500 underline">Ver vista alumno</a>
+          <div className="flex items-center gap-4">
+            <a href="/" className="text-sm text-blue-500 underline">Ver vista alumno</a>
+            <button
+              onClick={logout}
+              className="text-sm text-red-400 hover:text-red-600 transition"
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-6">
@@ -78,7 +86,9 @@ export default function AdminPage() {
                     <div>
                       <p className="font-medium text-gray-800">{t.nombre}</p>
                       <p className="text-sm text-gray-400">{t.email} · {t.nivel}</p>
-                      <p className="text-sm text-gray-500 mt-1">{t.fecha} — {t.hora}</p>
+                      <p className="text-sm text-gray-500 mt-1">
+  {new Date(t.fecha).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })} — {t.hora?.slice(0, 5)}
+</p>
                     </div>
                     <span className={`text-xs font-medium px-3 py-1 rounded-full ${estadoColor[t.estado]}`}>
                       {t.estado}
@@ -143,7 +153,9 @@ export default function AdminPage() {
               ) : (
                 horarios.map(h => (
                   <div key={h.id} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between">
-                    <p className="text-sm text-gray-700">{h.fecha} — {h.hora}</p>
+                    <p className="text-sm text-gray-700">
+  {new Date(h.fecha).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })} — {h.hora.slice(0, 5)}
+</p>
                     <button
                       onClick={() => eliminarHorario(h.id)}
                       className="text-xs text-red-400 hover:text-red-600 transition"

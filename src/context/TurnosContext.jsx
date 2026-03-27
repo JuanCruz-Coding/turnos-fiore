@@ -1,51 +1,70 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import * as api from "../services/api";
 
 const TurnosContext = createContext();
 
 export function TurnosProvider({ children }) {
-  const [turnos, setTurnos] = useState(() => {
-    const guardados = localStorage.getItem("turnos");
-    return guardados ? JSON.parse(guardados) : [];
-  });
-
-  const [horarios, setHorarios] = useState(() => {
-    const guardados = localStorage.getItem("horarios");
-    return guardados ? JSON.parse(guardados) : [];
-  });
+  const [turnos, setTurnos] = useState([]);
+  const [horarios, setHorarios] = useState([]);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   useEffect(() => {
-    localStorage.setItem("turnos", JSON.stringify(turnos));
-  }, [turnos]);
+    cargarHorarios();
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem("horarios", JSON.stringify(horarios));
-  }, [horarios]);
+    if (token) cargarTurnos();
+  }, [token]);
 
-  function agregarHorario(horario) {
-    setHorarios([...horarios, { id: Date.now(), ...horario }]);
+  async function cargarHorarios() {
+    const data = await api.getHorarios();
+    setHorarios(Array.isArray(data) ? data : []);
   }
 
-  function eliminarHorario(id) {
-    setHorarios(horarios.filter(h => h.id !== id));
+  async function cargarTurnos() {
+    const data = await api.getTurnos(token);
+    setTurnos(Array.isArray(data) ? data : []);
   }
 
-  function solicitarTurno(turno) {
-    setTurnos([...turnos, { id: Date.now(), estado: "pendiente", ...turno }]);
+  async function agregarHorario(horario) {
+    await api.agregarHorario(horario, token);
+    await cargarHorarios();
   }
 
-  function confirmarTurno(id) {
-    setTurnos(turnos.map(t => t.id === id ? { ...t, estado: "confirmado" } : t));
+  async function eliminarHorario(id) {
+    await api.eliminarHorario(id, token);
+    await cargarHorarios();
   }
 
-  function cancelarTurno(id) {
-    setTurnos(turnos.map(t => t.id === id ? { ...t, estado: "cancelado" } : t));
+  async function solicitarTurno(turno) {
+    await api.solicitarTurno(turno);
+    await cargarHorarios();
+  }
+
+  async function confirmarTurno(id) {
+    await api.confirmarTurno(id, token);
+    await cargarTurnos();
+  }
+
+  async function cancelarTurno(id) {
+    await api.cancelarTurno(id, token);
+    await cargarTurnos();
+    await cargarHorarios();
+  }
+
+  function logout() {
+    localStorage.removeItem("token");
+    setToken(null);
+    setTurnos([]);
   }
 
   return (
     <TurnosContext.Provider value={{
-      turnos, horarios,
+      turnos, horarios, token,
+      setToken,
       agregarHorario, eliminarHorario,
-      solicitarTurno, confirmarTurno, cancelarTurno
+      solicitarTurno, confirmarTurno, cancelarTurno,
+      logout
     }}>
       {children}
     </TurnosContext.Provider>

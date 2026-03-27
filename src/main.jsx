@@ -2,8 +2,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TurnosProvider } from "./context/TurnosContext";
-import AlumnoPage from "./pages/AlumnoPage";
+import LandingPage from "./pages/LandingPage";
+import TurnosPage from "./pages/TurnosPage";
+import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
@@ -11,8 +14,14 @@ createRoot(document.getElementById("root")).render(
     <TurnosProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<AlumnoPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/turnos" element={<TurnosPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          } />
         </Routes>
       </BrowserRouter>
     </TurnosProvider>
