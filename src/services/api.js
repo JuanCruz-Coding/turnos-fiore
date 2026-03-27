@@ -41,6 +41,13 @@ export async function getTurnos(token) {
   return res.json();
 }
 
+export async function getStats(token) {
+  const res = await fetch(`${BASE_URL}/turnos/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
 export async function solicitarTurno(turno) {
   const res = await fetch(`${BASE_URL}/turnos`, {
     method: "POST",
@@ -50,16 +57,16 @@ export async function solicitarTurno(turno) {
   return res.json();
 }
 
-export async function confirmarTurno(id, token) {
-  const res = await fetch(`${BASE_URL}/turnos/${id}/confirmar`, {
+export async function cancelarTurno(id, token) {
+  const res = await fetch(`${BASE_URL}/turnos/${id}/cancelar`, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
 }
 
-export async function cancelarTurno(id, token) {
-  const res = await fetch(`${BASE_URL}/turnos/${id}/cancelar`, {
+export async function reprogramarTurno(id, token) {
+  const res = await fetch(`${BASE_URL}/turnos/${id}/reprogramar`, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}` },
   });

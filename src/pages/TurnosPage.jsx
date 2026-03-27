@@ -17,14 +17,14 @@ const localizer = dateFnsLocalizer({
 
 export default function TurnosPage() {
   const { horarios, solicitarTurno } = useTurnos();
-  const [form, setForm] = useState({ nombre: "", email: "", nivel: "" });
+  const [form, setForm] = useState({ nombre: "", email: "", whatsapp: "", nivel: "" });
   const [horarioSeleccionado, setHorarioSeleccionado] = useState(null);
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
   const [panelAbierto, setPanelAbierto] = useState(false);
   const [fecha, setFecha] = useState(new Date());
-const [vista, setVista] = useState("month");
+  const [vista, setVista] = useState("month");
 
   const eventos = horarios.map(h => ({
     id: h.id,
@@ -49,7 +49,7 @@ const [vista, setVista] = useState("month");
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!form.nombre || !form.email || !form.nivel) {
+    if (!form.nombre || !form.email || !form.whatsapp || !form.nivel) {
       setError("Completá todos los campos.");
       return;
     }
@@ -57,6 +57,7 @@ const [vista, setVista] = useState("month");
     await solicitarTurno({
       nombre: form.nombre,
       email: form.email,
+      whatsapp: form.whatsapp,
       nivel: form.nivel,
       horario_id: horarioSeleccionado.id,
       fecha: horarioSeleccionado.fecha,
@@ -80,40 +81,40 @@ const [vista, setVista] = useState("month");
           </div>
 
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-           <Calendar
-  localizer={localizer}
-  events={eventos}
-  startAccessor="start"
-  endAccessor="end"
-  style={{ height: 600 }}
-  onSelectEvent={handleSelectEvento}
-  views={["month", "week", "day"]}
-  view={vista}
-  onView={setVista}
-  date={fecha}
-  onNavigate={setFecha}
-  culture="es"
-  messages={{
-    next: "Siguiente",
-    previous: "Anterior",
-    today: "Hoy",
-    month: "Mes",
-    week: "Semana",
-    day: "Día",
-    noEventsInRange: "No hay horarios disponibles.",
-  }}
-  eventPropGetter={() => ({
-    style: {
-      backgroundColor: "#3b82f6",
-      borderRadius: "6px",
-      border: "none",
-      fontSize: "12px",
-      fontWeight: "500",
-      cursor: "pointer",
-      padding: "2px 6px",
-    }
-  })}
-/>
+            <Calendar
+              localizer={localizer}
+              events={eventos}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 600 }}
+              onSelectEvent={handleSelectEvento}
+              views={["month", "week", "day"]}
+              view={vista}
+              onView={setVista}
+              date={fecha}
+              onNavigate={setFecha}
+              culture="es"
+              messages={{
+                next: "Siguiente",
+                previous: "Anterior",
+                today: "Hoy",
+                month: "Mes",
+                week: "Semana",
+                day: "Día",
+                noEventsInRange: "No hay horarios disponibles.",
+              }}
+              eventPropGetter={() => ({
+                style: {
+                  backgroundColor: "#3b82f6",
+                  borderRadius: "6px",
+                  border: "none",
+                  fontSize: "12px",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                  padding: "2px 6px",
+                }
+              })}
+            />
           </div>
 
         </div>
@@ -184,6 +185,16 @@ const [vista, setVista] = useState("month");
                     />
                   </div>
                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp</label>
+                    <input
+                      type="tel"
+                      placeholder="Ej: 3415551234"
+                      value={form.whatsapp}
+                      onChange={e => setForm({ ...form, whatsapp: e.target.value })}
+                      className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-400"
+                    />
+                  </div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Nivel</label>
                     <select
                       value={form.nivel}
@@ -196,6 +207,15 @@ const [vista, setVista] = useState("month");
                       <option value="Grupo">Quiero armar un grupo</option>
                     </select>
                   </div>
+
+                  {form.horarioId && horarioSeleccionado && (
+                    <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3">
+                      <p className="text-xs text-blue-400 mb-0.5">Horario seleccionado</p>
+                      <p className="text-sm font-medium text-blue-700 capitalize">
+                        {formatFecha(horarioSeleccionado.fecha)} — {horarioSeleccionado.hora.slice(0, 5)} hs
+                      </p>
+                    </div>
+                  )}
 
                   {error && <p className="text-red-500 text-sm">{error}</p>}
 

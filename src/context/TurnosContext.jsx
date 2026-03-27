@@ -6,6 +6,7 @@ const TurnosContext = createContext();
 export function TurnosProvider({ children }) {
   const [turnos, setTurnos] = useState([]);
   const [horarios, setHorarios] = useState([]);
+  const [stats, setStats] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   useEffect(() => {
@@ -13,7 +14,10 @@ export function TurnosProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (token) cargarTurnos();
+    if (token) {
+      cargarTurnos();
+      cargarStats();
+    }
   }, [token]);
 
   async function cargarHorarios() {
@@ -24,6 +28,11 @@ export function TurnosProvider({ children }) {
   async function cargarTurnos() {
     const data = await api.getTurnos(token);
     setTurnos(Array.isArray(data) ? data : []);
+  }
+
+  async function cargarStats() {
+    const data = await api.getStats(token);
+    setStats(data);
   }
 
   async function agregarHorario(horario) {
@@ -41,29 +50,37 @@ export function TurnosProvider({ children }) {
     await cargarHorarios();
   }
 
-  async function confirmarTurno(id) {
-    await api.confirmarTurno(id, token);
-    await cargarTurnos();
-  }
-
   async function cancelarTurno(id) {
-    await api.cancelarTurno(id, token);
+    const res = await api.cancelarTurno(id, token);
+    if (res.error) return res;
     await cargarTurnos();
     await cargarHorarios();
+    await cargarStats();
+    return res;
+  }
+
+  async function reprogramarTurno(id) {
+    const res = await api.reprogramarTurno(id, token);
+    if (res.error) return res;
+    await cargarTurnos();
+    await cargarHorarios();
+    await cargarStats();
+    return res;
   }
 
   function logout() {
     localStorage.removeItem("token");
     setToken(null);
     setTurnos([]);
+    setStats(null);
   }
 
   return (
     <TurnosContext.Provider value={{
-      turnos, horarios, token,
+      turnos, horarios, stats, token,
       setToken,
       agregarHorario, eliminarHorario,
-      solicitarTurno, confirmarTurno, cancelarTurno,
+      solicitarTurno, cancelarTurno, reprogramarTurno,
       logout
     }}>
       {children}
