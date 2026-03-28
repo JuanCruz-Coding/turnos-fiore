@@ -5,7 +5,7 @@ export default function SobreMi() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
           <div className="bg-blue-50 rounded-2xl overflow-hidden aspect-[4/5]">
             <img
-              src="./src/img/foto-fiore.jpeg"
+              src="/img/foto-fiore.jpeg"
               alt="Fiore profesora de matemáticas"
               className="w-full h-full object-cover"
               onError={e => e.target.style.display = 'none'}

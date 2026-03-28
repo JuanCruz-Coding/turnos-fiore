@@ -8,7 +8,7 @@ export default function Nav() {
             <div className="max-w-5xl mx-auto px-6 flex items-center justify-between">
 
                 <a href="/" className="flex items-center">
-                    <img src="./src/img/logo.png" alt="Mates con Fiore" className="h-30 w-auto" />
+                    <img src="/img/logo.png" alt="Mates con Fiore" className="h-30 w-auto" />
                 </a>
 
                 <button
