@@ -52,3 +52,7 @@
     background-color: #2563eb !important;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}

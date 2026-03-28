@@ -72,3 +72,40 @@ export async function reprogramarTurno(id, token) {
   });
   return res.json();
 }
+
+export async function getResenas() {
+  const res = await fetch(`${BASE_URL}/resenas`);
+  return res.json();
+}
+
+export async function getTodasResenas(token) {
+  const res = await fetch(`${BASE_URL}/resenas/todas`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+export async function crearResena(resena) {
+  const res = await fetch(`${BASE_URL}/resenas`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(resena),
+  });
+  return res.json();
+}
+
+export async function aprobarResena(id, token) {
+  const res = await fetch(`${BASE_URL}/resenas/${id}/aprobar`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+export async function eliminarResena(id, token) {
+  const res = await fetch(`${BASE_URL}/resenas/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}

@@ -36,8 +36,8 @@ export default function Contacto() {
     <section className="py-20 bg-blue-50" id="contacto">
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Contacto</h2>
-          <p className="text-gray-400">Escribime y coordinamos un horario que te quede cómodo.</p>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">¿Tenés alguna consulta?</h2>
+          <p className="text-gray-400">Escribime por cualquier duda. Para reservar una clase usá el botón "Ver disponibilidad".</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
 
@@ -63,23 +63,24 @@ export default function Contacto() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nivel</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Asunto</label>
               <select
                 value={form.nivel}
                 onChange={e => setForm({ ...form, nivel: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-400"
               >
-                <option value="">Seleccioná tu nivel</option>
-                <option value="Secundaria">Secundaria</option>
-                <option value="Adultos">Adulto / otra situación</option>
-                <option value="Grupo">Quiero armar un grupo</option>
+                <option value="">Seleccioná un asunto</option>
+                <option value="Consulta sobre precios">Consulta sobre precios</option>
+                <option value="Consulta sobre modalidad">Consulta sobre modalidad</option>
+                <option value="Consulta sobre niveles">Consulta sobre niveles</option>
+                <option value="Otra consulta">Otra consulta</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Mensaje</label>
               <textarea
                 rows="4"
-                placeholder="¿En qué tema necesitás ayuda?"
+                placeholder="¿Qué dudas tenés? ¿Querés saber más sobre las clases?"
                 value={form.mensaje}
                 onChange={e => setForm({ ...form, mensaje: e.target.value })}
                 className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none"

@@ -5,10 +5,10 @@ export default function Nav() {
 
     return (
         <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-            <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div className="max-w-5xl mx-auto px-6 flex items-center justify-between">
 
                 <a href="/" className="flex items-center">
-                    <img src="./src/img/logo.png" alt="Mates con Fiore" className="h-12 w-auto" />
+                    <img src="./src/img/logo.png" alt="Mates con Fiore" className="h-30 w-auto" />
                 </a>
 
                 <button
@@ -25,6 +25,7 @@ export default function Nav() {
                     <a href="/#metodologia" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Metodología</a>
                     <a href="/#sobre-mi" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Sobre mí</a>
                     <a href="/#contacto" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Contacto</a>
+                    <a href="/#resenas" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Reseñas</a>
                     <a href="/turnos" className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition" onClick={() => setMenuAbierto(false)}>Ver disponibilidad</a>
                     <a href="/login" className="text-sm border border-gray-200 hover:border-gray-400 text-gray-600 px-4 py-2 rounded-lg transition" onClick={() => setMenuAbierto(false)}>Iniciar sesión</a>
                 </nav>
