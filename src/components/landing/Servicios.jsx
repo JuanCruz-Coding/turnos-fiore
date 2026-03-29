@@ -19,7 +19,7 @@ const servicios = [
   }
 ];
 
-const whatsapp = "549XXXXXXXXXX"; // ← reemplazá con el número de Fiore
+const whatsapp = "5493412140785"; 
 
 export default function Servicios() {
   return (

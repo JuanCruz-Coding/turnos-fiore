@@ -20,7 +20,7 @@ export default function Contacto() {
       return;
     }
 
-    const telefono = "549XXXXXXXXXX"; // ← reemplazá con el número de Fiore
+    const telefono = "5493412140785"; // ← reemplazá con el número de Fiore
     const texto = `Hola Fiore! Te escribo desde matesconfiore.com.ar 👋
 *Nombre:* ${form.nombre}
 *Email:* ${form.email}
@@ -98,7 +98,7 @@ export default function Contacto() {
           <div className="space-y-6 pt-2">
             <div>
               <p className="text-xs font-medium text-blue-500 uppercase tracking-widest mb-1">WhatsApp</p>
-              <a href="https://wa.me/549XXXXXXXXXX" className="text-gray-600 hover:text-blue-500 transition">+54 9 XX XXXX-XXXX</a>
+              <a href="https://wa.me/5493412140785" className="text-gray-600 hover:text-blue-500 transition">+54 9 XX XXXX-XXXX</a>
             </div>
             <div>
               <p className="text-xs font-medium text-blue-500 uppercase tracking-widest mb-1">Email</p>
@@ -106,7 +106,6 @@ export default function Contacto() {
             </div>
             <div>
               <p className="text-xs font-medium text-blue-500 uppercase tracking-widest mb-1">Modalidades</p>
-              <p className="text-gray-600 text-sm">Presencial en Gobernador Gálvez</p>
               <p className="text-gray-600 text-sm">Online por videollamada</p>
             </div>
             <div>
