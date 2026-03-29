@@ -14,7 +14,7 @@ export default function SobreMi() {
           <div>
             <h2 className="text-3xl font-bold text-gray-800 mb-4">Hola, soy Fiore</h2>
             <p className="text-gray-500 leading-relaxed mb-4">
-              Soy profesora de matemáticas con experiencia trabajando con alumnos de secundaria y adultos. Me apasiona encontrar la forma en que cada persona aprende mejor.
+              Soy profesora de matemáticas con experiencia. Me apasiona encontrar la forma en que cada persona aprende mejor.
             </p>
             <p className="text-gray-500 leading-relaxed mb-6">
               Creo que no existe el "no sirvo para las mates" — solo falta encontrar la explicación correcta. Por eso cada clase es diferente y está pensada para vos.

@@ -30,11 +30,11 @@ export default function AdminPage() {
   }
 
   async function handleAgregarHorario(e) {
-    e.preventDefault();
-    if (!form.fecha || !form.hora) return;
-    await agregarHorario(form);
-    setForm({ fecha: "", hora: "" });
-  }
+  e.preventDefault();
+  if (!form.fecha || !form.hora) return;
+  await agregarHorario(form);
+  setForm({ fecha: "", hora: "" });
+}
 
   async function handleCancelar(id) {
     setMensajeError("");
@@ -48,11 +48,10 @@ export default function AdminPage() {
     if (res?.error) setMensajeError(res.error);
   }
 
-  function formatFecha(fecha) {
-    return new Date(fecha).toLocaleDateString('es-AR', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
-    });
-  }
+ function formatFecha(fecha) {
+  const [year, month, day] = fecha.split('T')[0].split('-');
+  return `${day}/${month}/${year}`;
+}
 
   const confirmados = turnos.filter(t => t.estado === "confirmado");
   const cancelados = turnos.filter(t => t.estado === "cancelado");

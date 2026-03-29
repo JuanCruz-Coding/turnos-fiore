@@ -9,7 +9,7 @@ export default function Hero() {
           Las matemáticas son más fáciles de lo que creés
         </h1>
         <p className="text-gray-500 text-lg mb-8 max-w-lg mx-auto">
-          Clases personalizadas para secundaria y adultos. Presencial en Gobernador Gálvez u online desde donde estés.
+          Clases personalizadas y online desde donde estés.
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
           <a href="/turnos" className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-lg transition">

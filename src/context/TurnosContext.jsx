@@ -35,10 +35,12 @@ export function TurnosProvider({ children }) {
     setStats(data);
   }
 
-  async function agregarHorario(horario) {
-    await api.agregarHorario(horario, token);
-    await cargarHorarios();
-  }
+async function agregarHorario(horario) {
+  const [year, month, day] = horario.fecha.split('-');
+  const fechaCorregida = `${year}-${month}-${day}`;
+  await api.agregarHorario({ ...horario, fecha: fechaCorregida }, token);
+  await cargarHorarios();
+}
 
   async function eliminarHorario(id) {
     await api.eliminarHorario(id, token);
