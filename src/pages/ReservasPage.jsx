@@ -3,7 +3,7 @@ import Footer from "../components/landing/Footer";
 
 export default function ReservasPage() {
   const alias = "fiorellacozza.mp";
-  const whatsapp = "549XXXXXXXXXX"; // ← reemplazá con el número de Fiore
+  const whatsapp = "5493412140785";
 
   const pasos = [
     {
