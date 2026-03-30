@@ -21,14 +21,14 @@ export default function Nav() {
                 </button>
 
                 <nav className={`${menuAbierto ? "flex" : "hidden"} md:flex absolute md:static top-full left-0 right-0 bg-white md:bg-transparent flex-col md:flex-row items-start md:items-center gap-6 px-6 md:px-0 py-4 md:py-0 border-b md:border-none border-gray-100`}>
-                    <a href="/#servicios" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Servicios</a>
-                    <a href="/#metodologia" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Metodología</a>
-                    <a href="/reservas" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Cómo reservar</a>
-                    <a href="/#sobre-mi" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Sobre mí</a>
-                    <a href="/#resenas" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Reseñas</a>
-                    <a href="/#contacto" className="text-sm text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Contacto</a>
-                    <a href="/turnos" className="text-sm bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition" onClick={() => setMenuAbierto(false)}>Ver disponibilidad</a>
-                    <a href="/login" className="text-sm border border-gray-200 hover:border-gray-400 text-gray-600 px-4 py-2 rounded-lg transition" onClick={() => setMenuAbierto(false)}>Iniciar sesión</a>
+                    <a href="/#servicios" className="text-xs text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Servicios</a>
+                    <a href="/#metodologia" className="text-xs text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Metodología</a>
+                    <a href="/reservas" className="text-xs text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Cómo reservar</a>
+                    <a href="/#sobre-mi" className="text-xs text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Sobre mí</a>
+                    <a href="/#resenas" className="text-xs text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Reseñas</a>
+                    <a href="/#contacto" className="text-xs text-gray-500 hover:text-gray-800 transition" onClick={() => setMenuAbierto(false)}>Contacto</a>
+                    <a href="/turnos" className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition" onClick={() => setMenuAbierto(false)}>Ver disponibilidad</a>
+                    <a href="/login" className="text-xs border border-gray-200 hover:border-gray-400 text-gray-600 px-4 py-2 rounded-lg transition" onClick={() => setMenuAbierto(false)}>Iniciar sesión</a>
                 </nav>
 
             </div>
