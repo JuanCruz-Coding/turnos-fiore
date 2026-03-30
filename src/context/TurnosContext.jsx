@@ -77,13 +77,20 @@ async function agregarHorario(horario) {
     setStats(null);
   }
 
+  async function generarHorariosAutomaticos(datos) {
+  const res = await api.generarHorarios(datos, token);
+  if (res.error) return res;
+  await cargarHorarios();
+  return res;
+}
+
   return (
     <TurnosContext.Provider value={{
       turnos, horarios, stats, token,
       setToken,
       agregarHorario, eliminarHorario,
       solicitarTurno, cancelarTurno, reprogramarTurno,
-      logout
+      logout,generarHorariosAutomaticos
     }}>
       {children}
     </TurnosContext.Provider>

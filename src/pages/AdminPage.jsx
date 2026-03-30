@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTurnos } from "../context/TurnosContext";
 import { getTodasResenas, aprobarResena, eliminarResena } from "../services/api";
+import GeneradorHorarios from "../components/GeneradorHorarios";
 
 
 export default function AdminPage() {
@@ -9,6 +10,7 @@ export default function AdminPage() {
   const [vista, setVista] = useState("dashboard");
   const [mensajeError, setMensajeError] = useState("");
   const [resenas, setResenas] = useState([]);
+  const [mostrarGenerador, setMostrarGenerador] = useState(false);
 
   useEffect(() => {
     if (token) cargarResenas();
@@ -30,11 +32,11 @@ export default function AdminPage() {
   }
 
   async function handleAgregarHorario(e) {
-  e.preventDefault();
-  if (!form.fecha || !form.hora) return;
-  await agregarHorario(form);
-  setForm({ fecha: "", hora: "" });
-}
+    e.preventDefault();
+    if (!form.fecha || !form.hora) return;
+    await agregarHorario(form);
+    setForm({ fecha: "", hora: "" });
+  }
 
   async function handleCancelar(id) {
     setMensajeError("");
@@ -48,10 +50,10 @@ export default function AdminPage() {
     if (res?.error) setMensajeError(res.error);
   }
 
- function formatFecha(fecha) {
-  const [year, month, day] = fecha.split('T')[0].split('-');
-  return `${day}/${month}/${year}`;
-}
+  function formatFecha(fecha) {
+    const [year, month, day] = fecha.split('T')[0].split('-');
+    return `${day}/${month}/${year}`;
+  }
 
   const confirmados = turnos.filter(t => t.estado === "confirmado");
   const cancelados = turnos.filter(t => t.estado === "cancelado");
@@ -142,50 +144,50 @@ export default function AdminPage() {
         )}
 
         {vista === "dashboard" && (
-  <div className="space-y-5">
-    <div className="grid grid-cols-3 gap-3">
-      <div className="bg-white border border-gray-100 rounded-xl p-5 text-center">
-        <p className="text-3xl font-bold text-blue-500">{stats?.clasesSemana ?? 0}</p>
-        <p className="text-xs text-gray-400 mt-1">Clases esta semana</p>
-      </div>
-      <div className="bg-white border border-gray-100 rounded-xl p-5 text-center">
-        <p className="text-3xl font-bold text-emerald-500">{stats?.alumnosUnicos ?? 0}</p>
-        <p className="text-xs text-gray-400 mt-1">Alumnos únicos</p>
-      </div>
-      <div className="bg-white border border-gray-100 rounded-xl p-5 text-center">
-        <p className="text-3xl font-bold text-purple-500">{turnos.filter(t => t.estado === "confirmado").length}</p>
-        <p className="text-xs text-gray-400 mt-1">Turnos confirmados</p>
-      </div>
-    </div>
-
-    <div className="bg-white border border-gray-100 rounded-xl p-5">
-      <h2 className="font-bold text-gray-700 mb-4">Próximos turnos de hoy</h2>
-      {!stats?.proximosDia?.length ? (
-        <p className="text-sm text-gray-400 italic">No hay turnos para hoy.</p>
-      ) : (
-        <div className="space-y-3">
-          {stats.proximosDia.map(t => (
-            <div key={t.id} className="flex items-center justify-between border-b border-gray-50 pb-3 last:border-none last:pb-0">
-              <div>
-                <p className="font-medium text-gray-800 text-sm">{t.nombre}</p>
-                <p className="text-xs text-gray-400">{t.nivel} · {t.hora?.slice(0, 5)} hs</p>
+          <div className="space-y-5">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-white border border-gray-100 rounded-xl p-5 text-center">
+                <p className="text-3xl font-bold text-blue-500">{stats?.clasesSemana ?? 0}</p>
+                <p className="text-xs text-gray-400 mt-1">Clases esta semana</p>
               </div>
-              {t.whatsapp && (
-                <a
-                  href={"https://wa.me/54" + t.whatsapp}
-                  target="_blank"
-                  className="text-xs bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-full hover:bg-emerald-100 transition"
-                >
-                  WhatsApp
-                </a>
+              <div className="bg-white border border-gray-100 rounded-xl p-5 text-center">
+                <p className="text-3xl font-bold text-emerald-500">{stats?.alumnosUnicos ?? 0}</p>
+                <p className="text-xs text-gray-400 mt-1">Alumnos únicos</p>
+              </div>
+              <div className="bg-white border border-gray-100 rounded-xl p-5 text-center">
+                <p className="text-3xl font-bold text-purple-500">{turnos.filter(t => t.estado === "confirmado").length}</p>
+                <p className="text-xs text-gray-400 mt-1">Turnos confirmados</p>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-100 rounded-xl p-5">
+              <h2 className="font-bold text-gray-700 mb-4">Próximos turnos de hoy</h2>
+              {!stats?.proximosDia?.length ? (
+                <p className="text-sm text-gray-400 italic">No hay turnos para hoy.</p>
+              ) : (
+                <div className="space-y-3">
+                  {stats.proximosDia.map(t => (
+                    <div key={t.id} className="flex items-center justify-between border-b border-gray-50 pb-3 last:border-none last:pb-0">
+                      <div>
+                        <p className="font-medium text-gray-800 text-sm">{t.nombre}</p>
+                        <p className="text-xs text-gray-400">{t.nivel} · {t.hora?.slice(0, 5)} hs</p>
+                      </div>
+                      {t.whatsapp && (
+                        <a
+                          href={"https://wa.me/54" + t.whatsapp}
+                          target="_blank"
+                          className="text-xs bg-emerald-50 text-emerald-600 border border-emerald-100 px-3 py-1 rounded-full hover:bg-emerald-100 transition"
+                        >
+                          WhatsApp
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-          ))}
-        </div>
-      )}
-    </div>
-  </div>
-)}
+          </div>
+        )}
 
         {vista === "turnos" && (
           <div className="space-y-3">
@@ -244,6 +246,18 @@ export default function AdminPage() {
 
         {vista === "horarios" && (
           <div className="space-y-4">
+
+            <button
+              onClick={() => setMostrarGenerador(!mostrarGenerador)}
+              className="w-full border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm font-medium py-2.5 rounded-xl transition"
+            >
+              {mostrarGenerador ? "Ocultar generador automático" : "Generar horarios automáticamente"}
+            </button>
+
+            {mostrarGenerador && (
+              <GeneradorHorarios onCerrar={() => setMostrarGenerador(false)} />
+            )}
+
             <form onSubmit={handleAgregarHorario} className="bg-white border border-gray-100 rounded-xl p-4 flex gap-3 items-end">
               <div className="flex-1">
                 <label className="block text-xs font-medium text-gray-600 mb-1">Fecha</label>

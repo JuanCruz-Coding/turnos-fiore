@@ -109,3 +109,15 @@ export async function eliminarResena(id, token) {
   });
   return res.json();
 }
+
+export async function generarHorarios(datos, token) {
+  const res = await fetch(`${BASE_URL}/horarios/generar`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(datos),
+  });
+  return res.json();
+}
