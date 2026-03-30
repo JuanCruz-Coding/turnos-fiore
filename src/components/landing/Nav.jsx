@@ -5,7 +5,7 @@ export default function Nav() {
 
     return (
         <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-            <div className="max-w-5xl mx-auto px-6 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
 
                 <a href="/" className="flex items-center">
                     <img src="/img/logo.png" alt="Mates con Fiore" className="h-30 w-auto" />
