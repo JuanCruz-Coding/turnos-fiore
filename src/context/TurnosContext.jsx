@@ -7,6 +7,7 @@ export function TurnosProvider({ children }) {
   const [turnos, setTurnos] = useState([]);
   const [horarios, setHorarios] = useState([]);
   const [stats, setStats] = useState(null);
+  const [alumnos, setAlumnos] = useState([]);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export function TurnosProvider({ children }) {
     if (token) {
       cargarTurnos();
       cargarStats();
+      cargarAlumnos();
     }
   }, [token]);
 
@@ -35,12 +37,17 @@ export function TurnosProvider({ children }) {
     setStats(data);
   }
 
-async function agregarHorario(horario) {
-  const [year, month, day] = horario.fecha.split('-');
-  const fechaCorregida = `${year}-${month}-${day}`;
-  await api.agregarHorario({ ...horario, fecha: fechaCorregida }, token);
-  await cargarHorarios();
-}
+  async function cargarAlumnos() {
+    const data = await api.getAlumnos(token);
+    setAlumnos(Array.isArray(data) ? data : []);
+  }
+
+  async function agregarHorario(horario) {
+    const [year, month, day] = horario.fecha.split('-');
+    const fechaCorregida = `${year}-${month}-${day}`;
+    await api.agregarHorario({ ...horario, fecha: fechaCorregida }, token);
+    await cargarHorarios();
+  }
 
   async function eliminarHorario(id) {
     await api.eliminarHorario(id, token);
@@ -70,27 +77,44 @@ async function agregarHorario(horario) {
     return res;
   }
 
+  async function confirmarPago(id) {
+    const res = await api.confirmarPago(id, token);
+    if (res.error) return res;
+    await cargarTurnos();
+    await cargarStats();
+    return res;
+  }
+
+  async function actualizarNotas(id, notas) {
+    const res = await api.actualizarNotas(id, notas, token);
+    await cargarAlumnos();
+    return res;
+  }
+
+  async function generarHorariosAutomaticos(datos) {
+    const res = await api.generarHorarios(datos, token);
+    if (res.error) return res;
+    await cargarHorarios();
+    return res;
+  }
+
   function logout() {
     localStorage.removeItem("token");
     setToken(null);
     setTurnos([]);
     setStats(null);
+    setAlumnos([]);
   }
-
-  async function generarHorariosAutomaticos(datos) {
-  const res = await api.generarHorarios(datos, token);
-  if (res.error) return res;
-  await cargarHorarios();
-  return res;
-}
 
   return (
     <TurnosContext.Provider value={{
-      turnos, horarios, stats, token,
+      turnos, horarios, stats, alumnos, token,
       setToken,
       agregarHorario, eliminarHorario,
       solicitarTurno, cancelarTurno, reprogramarTurno,
-      logout,generarHorariosAutomaticos
+      confirmarPago, actualizarNotas,
+      generarHorariosAutomaticos,
+      logout
     }}>
       {children}
     </TurnosContext.Provider>

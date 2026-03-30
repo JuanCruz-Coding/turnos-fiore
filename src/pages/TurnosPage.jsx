@@ -17,7 +17,7 @@ const localizer = dateFnsLocalizer({
 
 export default function TurnosPage() {
   const { horarios, solicitarTurno } = useTurnos();
-  const [form, setForm] = useState({ nombre: "", email: "", whatsapp: "", nivel: "" });
+  const [form, setForm] = useState({ nombre: "", email: "", whatsapp: "", dni: "", nivel: "" });
   const [horarioSeleccionado, setHorarioSeleccionado] = useState(null);
   const [enviado, setEnviado] = useState(false);
   const [error, setError] = useState("");
@@ -49,7 +49,7 @@ export default function TurnosPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!form.nombre || !form.email || !form.whatsapp || !form.nivel) {
+    if (!form.nombre || !form.email || !form.whatsapp || !form.dni || !form.nivel) {
       setError("Completá todos los campos.");
       return;
     }
@@ -58,6 +58,7 @@ export default function TurnosPage() {
       nombre: form.nombre,
       email: form.email,
       whatsapp: form.whatsapp,
+      dni: form.dni,
       nivel: form.nivel,
       horario_id: horarioSeleccionado.id,
       fecha: horarioSeleccionado.fecha,
@@ -191,6 +192,16 @@ export default function TurnosPage() {
                       placeholder="Ej: 3415551234"
                       value={form.whatsapp}
                       onChange={e => setForm({ ...form, whatsapp: e.target.value })}
+                      className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">DNI</label>
+                    <input
+                      type="text"
+                      placeholder="Tu número de DNI"
+                      value={form.dni}
+                      onChange={e => setForm({ ...form, dni: e.target.value })}
                       className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-400"
                     />
                   </div>

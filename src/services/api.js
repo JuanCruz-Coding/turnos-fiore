@@ -121,3 +121,41 @@ export async function generarHorarios(datos, token) {
   });
   return res.json();
 }
+
+export async function getAlumnos(token) {
+  const res = await fetch(`${BASE_URL}/alumnos`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+export async function getAlumno(id, token) {
+  const res = await fetch(`${BASE_URL}/alumnos/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+export async function actualizarNotas(id, notas, token) {
+  const res = await fetch(`${BASE_URL}/alumnos/${id}/notas`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ notas }),
+  });
+  return res.json();
+}
+
+export async function confirmarPago(id, token) {
+  const res = await fetch(`${BASE_URL}/turnos/${id}/pago`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ pago: "recibido" }),
+  });
+  return res.json();
+}

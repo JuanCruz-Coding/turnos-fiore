@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useTurnos } from "../context/TurnosContext";
 import { getTodasResenas, aprobarResena, eliminarResena } from "../services/api";
 import GeneradorHorarios from "../components/GeneradorHorarios";
+import AlumnosPage from "./AlumnosPage";
 
 
 export default function AdminPage() {
-  const { turnos, horarios, stats, token, agregarHorario, eliminarHorario, cancelarTurno, reprogramarTurno, logout } = useTurnos();
+  const { turnos, horarios, stats, token, agregarHorario, eliminarHorario, cancelarTurno, reprogramarTurno, confirmarPago, logout } = useTurnos();
   const [form, setForm] = useState({ fecha: "", hora: "" });
   const [vista, setVista] = useState("dashboard");
   const [mensajeError, setMensajeError] = useState("");
@@ -15,6 +16,10 @@ export default function AdminPage() {
   useEffect(() => {
     if (token) cargarResenas();
   }, [token]);
+
+  async function handleConfirmarPago(id) {
+    await confirmarPago(id);
+  }
 
   async function cargarResenas() {
     const data = await getTodasResenas(token);
@@ -81,13 +86,13 @@ export default function AdminPage() {
         </div>
 
         <div className="flex gap-2 mb-6 flex-wrap">
-          {["dashboard", "turnos", "horarios", "resenas"].map(v => (
+          {["dashboard", "turnos", "horarios", "alumnos", "resenas"].map(v => (
             <button
               key={v}
               onClick={() => { setVista(v); setMensajeError(""); }}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition capitalize ${vista === v ? "bg-blue-500 text-white" : "bg-white border border-gray-200 text-gray-600"}`}
             >
-              {v === "dashboard" ? "Dashboard" : v === "turnos" ? "Turnos" : v === "horarios" ? "Mis horarios" : "Reseñas"}
+              {v === "dashboard" ? "Dashboard" : v === "turnos" ? "Turnos" : v === "horarios" ? "Mis horarios" : v === "alumnos" ? "Alumnos" : "Reseñas"}
             </button>
           ))}
         </div>
@@ -221,9 +226,20 @@ export default function AdminPage() {
                     <span className={`text-xs font-medium px-3 py-1 rounded-full ${estadoColor[t.estado] || "bg-gray-100 text-gray-500"}`}>
                       {t.estado}
                     </span>
+                    <span className={`text-xs font-medium px-3 py-1 rounded-full ${t.pago === "recibido" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                      {t.pago === "recibido" ? "Pago recibido" : "Pago pendiente"}
+                    </span>
                   </div>
                   {t.estado === "confirmado" && (
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-3 flex-wrap">
+                      {t.pago !== "recibido" && (
+                        <button
+                          onClick={() => handleConfirmarPago(t.id)}
+                          className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm py-1.5 rounded-lg transition border border-blue-100"
+                        >
+                          Marcar pago recibido
+                        </button>
+                      )}
                       <button
                         onClick={() => handleReprogramar(t.id)}
                         className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-600 text-sm py-1.5 rounded-lg transition border border-amber-100"
@@ -308,6 +324,8 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
+        {vista === "alumnos" && <AlumnosPage />}
 
       </div>
     </div>
