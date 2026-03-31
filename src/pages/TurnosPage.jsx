@@ -6,6 +6,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useTurnos } from "../context/TurnosContext";
 import Nav from "../components/landing/Nav";
 import Footer from "../components/landing/Footer";
+import { crearPreferenciaPago } from "../services/api";
 
 const localizer = dateFnsLocalizer({
   format,
@@ -69,6 +70,41 @@ export default function TurnosPage() {
     setCargando(false);
     setForm({ nombre: "", email: "", nivel: "" });
   }
+
+  async function handlePagarMP() {
+  if (!form.nombre || !form.email || !form.whatsapp || !form.dni || !form.nivel) {
+    setError("Completá todos los campos antes de pagar.");
+    return;
+  }
+  setCargando(true);
+
+  await solicitarTurno({
+    nombre: form.nombre,
+    email: form.email,
+    whatsapp: form.whatsapp,
+    dni: form.dni,
+    nivel: form.nivel,
+    horario_id: horarioSeleccionado.id,
+    fecha: horarioSeleccionado.fecha,
+    hora: horarioSeleccionado.hora,
+  });
+
+  const data = await crearPreferenciaPago({
+    nombre: form.nombre,
+    email: form.email,
+    horario_id: horarioSeleccionado.id,
+    fecha: horarioSeleccionado.fecha,
+    hora: horarioSeleccionado.hora,
+  });
+
+  setCargando(false);
+
+  if (data.init_point) {
+    window.location.href = data.init_point;
+  } else {
+    setError("Error al conectar con Mercado Pago. Intentá por transferencia.");
+  }
+}
 
   return (
     <div>
@@ -230,13 +266,24 @@ export default function TurnosPage() {
 
                   {error && <p className="text-red-500 text-sm">{error}</p>}
 
-                  <button
-                    type="submit"
-                    disabled={cargando}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-40"
-                  >
-                    {cargando ? "Enviando..." : "Confirmar turno"}
-                  </button>
+                  <div className="space-y-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handlePagarMP}
+                      disabled={cargando}
+                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-40 flex items-center justify-center gap-2"
+                    >
+                      <span>Pagar con Mercado Pago</span>
+                      <span className="text-xs bg-blue-400 px-2 py-0.5 rounded-full">Recomendado</span>
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={cargando}
+                      className="w-full border border-gray-200 hover:border-gray-400 text-gray-600 font-medium py-2.5 rounded-lg text-sm transition disabled:opacity-40"
+                    >
+                      Pagar por transferencia
+                    </button>
+                  </div>
                 </form>
               </>
             )}

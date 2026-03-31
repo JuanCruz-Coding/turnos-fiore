@@ -159,3 +159,12 @@ export async function confirmarPago(id, token) {
   });
   return res.json();
 }
+
+export async function crearPreferenciaPago(datos) {
+  const res = await fetch(`${BASE_URL}/pagos/crear-preferencia`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datos),
+  });
+  return res.json();
+}
