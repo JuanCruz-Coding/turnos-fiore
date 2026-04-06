@@ -55,8 +55,9 @@ export function TurnosProvider({ children }) {
   }
 
   async function solicitarTurno(turno) {
-    await api.solicitarTurno(turno);
-    await cargarHorarios();
+    const res = await api.solicitarTurno(turno);
+    if (!res.error) await cargarHorarios();
+    return res;
   }
 
   async function cancelarTurno(id) {

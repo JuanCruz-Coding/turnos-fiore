@@ -260,3 +260,69 @@ export async function crearPreferenciaPago(datos) {
     return { error: "No se pudo conectar con el servidor." };
   }
 }
+
+// ─── Disponibilidad recurrente ────────────────────────────────────────────────
+
+export async function getSlots() {
+  try {
+    const res = await fetch(`${BASE_URL}/horarios/slots`);
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function getDisponibilidad(token) {
+  try {
+    const res = await fetch(`${BASE_URL}/disponibilidad`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function crearDisponibilidad(regla, token) {
+  try {
+    const res = await fetch(`${BASE_URL}/disponibilidad`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(regla),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function eliminarDisponibilidad(id, token) {
+  try {
+    const res = await fetch(`${BASE_URL}/disponibilidad/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function actualizarDisponibilidad(id, datos, token) {
+  try {
+    const res = await fetch(`${BASE_URL}/disponibilidad/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}

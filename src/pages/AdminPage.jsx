@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTurnos } from "../context/TurnosContext";
 import { getTodasResenas, aprobarResena, eliminarResena } from "../services/api";
-import GeneradorHorarios from "../components/GeneradorHorarios";
+import DisponibilidadSemanal from "../components/DisponibilidadSemanal";
 import AlumnosPage from "./AlumnosPage";
 
 
@@ -292,11 +292,11 @@ export default function AdminPage() {
               onClick={() => setMostrarGenerador(!mostrarGenerador)}
               className="w-full border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm font-medium py-2.5 rounded-xl transition"
             >
-              {mostrarGenerador ? "Ocultar generador automático" : "Generar horarios automáticamente"}
+              {mostrarGenerador ? "Ocultar disponibilidad semanal" : "Gestionar disponibilidad semanal"}
             </button>
 
             {mostrarGenerador && (
-              <GeneradorHorarios onCerrar={() => setMostrarGenerador(false)} />
+              <DisponibilidadSemanal onCerrar={() => setMostrarGenerador(false)} />
             )}
 
             <form onSubmit={handleAgregarHorario} className="bg-white border border-gray-100 rounded-xl p-4 flex gap-3 items-end">
