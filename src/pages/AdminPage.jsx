@@ -6,14 +6,11 @@ import AlumnosPage from "./AlumnosPage";
 
 
 export default function AdminPage() {
-  const { turnos, horarios, stats, token, agregarHorario, eliminarHorario, cancelarTurno, reprogramarTurno, confirmarPago, logout } = useTurnos();
-  const [form, setForm] = useState({ fecha: "", hora: "" });
+  const { turnos, stats, token, cancelarTurno, reprogramarTurno, confirmarPago, logout } = useTurnos();
   const [vista, setVista] = useState("dashboard");
   const [mensajeError, setMensajeError] = useState("");
   const [resenas, setResenas] = useState([]);
-  const [mostrarGenerador, setMostrarGenerador] = useState(false);
   const [cargandoAccion, setCargandoAccion] = useState(null);
-  const [cargandoHorario, setCargandoHorario] = useState(false);
 
   useEffect(() => {
     if (token) cargarResenas();
@@ -44,15 +41,6 @@ export default function AdminPage() {
     setCargandoAccion(null);
   }
 
-  async function handleAgregarHorario(e) {
-    e.preventDefault();
-    if (!form.fecha || !form.hora) return;
-    setCargandoHorario(true);
-    await agregarHorario(form);
-    setForm({ fecha: "", hora: "" });
-    setCargandoHorario(false);
-  }
-
   async function handleCancelar(id) {
     setMensajeError("");
     setCargandoAccion(`cancelar-${id}`);
@@ -69,19 +57,10 @@ export default function AdminPage() {
     setCargandoAccion(null);
   }
 
-  async function handleEliminarHorario(id) {
-    setCargandoAccion(`horario-${id}`);
-    await eliminarHorario(id);
-    setCargandoAccion(null);
-  }
-
   function formatFecha(fecha) {
     const [year, month, day] = fecha.split('T')[0].split('-');
     return `${day}/${month}/${year}`;
   }
-
-  const confirmados = turnos.filter(t => t.estado === "confirmado");
-  const cancelados = turnos.filter(t => t.estado === "cancelado");
 
   const estadoColor = {
     confirmado: "bg-green-100 text-green-700",
@@ -286,70 +265,7 @@ export default function AdminPage() {
         )}
 
         {vista === "horarios" && (
-          <div className="space-y-4">
-
-            <button
-              onClick={() => setMostrarGenerador(!mostrarGenerador)}
-              className="w-full border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm font-medium py-2.5 rounded-xl transition"
-            >
-              {mostrarGenerador ? "Ocultar disponibilidad semanal" : "Gestionar disponibilidad semanal"}
-            </button>
-
-            {mostrarGenerador && (
-              <DisponibilidadSemanal onCerrar={() => setMostrarGenerador(false)} />
-            )}
-
-            <form onSubmit={handleAgregarHorario} className="bg-white border border-gray-100 rounded-xl p-4 flex gap-3 items-end">
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
-                <input
-                  type="date"
-                  value={form.fecha}
-                  onChange={e => setForm({ ...form, fecha: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Hora</label>
-                <input
-                  type="time"
-                  value={form.hora}
-                  onChange={e => setForm({ ...form, hora: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={cargandoHorario}
-                className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition disabled:opacity-40"
-              >
-                {cargandoHorario ? "Agregando..." : "Agregar"}
-              </button>
-            </form>
-
-            <div className="space-y-2">
-              {horarios.length === 0 ? (
-                <div className="bg-white border border-gray-100 rounded-xl p-6 text-center">
-                  <p className="text-gray-400 text-sm">No hay horarios cargados.</p>
-                </div>
-              ) : (
-                horarios.map(h => (
-                  <div key={h.id} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between">
-                    <p className="text-sm text-gray-700">
-                      {formatFecha(h.fecha)} — {h.hora.slice(0, 5)} hs
-                    </p>
-                    <button
-                      onClick={() => handleEliminarHorario(h.id)}
-                      disabled={!!cargandoAccion}
-                      className="text-xs text-red-400 hover:text-red-600 transition disabled:opacity-40"
-                    >
-                      {cargandoAccion === `horario-${h.id}` ? "Eliminando..." : "Eliminar"}
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          <DisponibilidadSemanal />
         )}
 
         {vista === "alumnos" && <AlumnosPage />}
