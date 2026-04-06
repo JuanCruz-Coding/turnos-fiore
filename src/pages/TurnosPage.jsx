@@ -68,7 +68,7 @@ export default function TurnosPage() {
     setEnviado(true);
     setError("");
     setCargando(false);
-    setForm({ nombre: "", email: "", nivel: "" });
+    setForm({ nombre: "", email: "", whatsapp: "", dni: "", nivel: "" });
   }
 
   async function handlePagarMP() {

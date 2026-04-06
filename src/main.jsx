@@ -11,13 +11,15 @@ import PagoExitosoPage from "./pages/PagoExitosoPage";
 import PagoFallidoPage from "./pages/PagoFallidoPage";
 import PagoPendientePage from "./pages/PagoPendientePage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <TurnosProvider>
-      <BrowserRouter>
-        <Routes>
+    <ErrorBoundary>
+      <TurnosProvider>
+        <BrowserRouter>
+          <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/turnos" element={<TurnosPage />} />
           <Route path="/reservas" element={<ReservasPage />} />
@@ -30,8 +32,9 @@ createRoot(document.getElementById("root")).render(
               <AdminPage />
             </ProtectedRoute>
           } />
-        </Routes>
-      </BrowserRouter>
-    </TurnosProvider>
+          </Routes>
+        </BrowserRouter>
+      </TurnosProvider>
+    </ErrorBoundary>
   </StrictMode>
 );

@@ -12,13 +12,17 @@ export default function AdminPage() {
   const [mensajeError, setMensajeError] = useState("");
   const [resenas, setResenas] = useState([]);
   const [mostrarGenerador, setMostrarGenerador] = useState(false);
+  const [cargandoAccion, setCargandoAccion] = useState(null);
+  const [cargandoHorario, setCargandoHorario] = useState(false);
 
   useEffect(() => {
     if (token) cargarResenas();
   }, [token]);
 
   async function handleConfirmarPago(id) {
+    setCargandoAccion(`pago-${id}`);
     await confirmarPago(id);
+    setCargandoAccion(null);
   }
 
   async function cargarResenas() {
@@ -27,32 +31,48 @@ export default function AdminPage() {
   }
 
   async function handleAprobarResena(id) {
+    setCargandoAccion(`aprobar-${id}`);
     await aprobarResena(id, token);
     await cargarResenas();
+    setCargandoAccion(null);
   }
 
   async function handleEliminarResena(id) {
+    setCargandoAccion(`eliminarResena-${id}`);
     await eliminarResena(id, token);
     await cargarResenas();
+    setCargandoAccion(null);
   }
 
   async function handleAgregarHorario(e) {
     e.preventDefault();
     if (!form.fecha || !form.hora) return;
+    setCargandoHorario(true);
     await agregarHorario(form);
     setForm({ fecha: "", hora: "" });
+    setCargandoHorario(false);
   }
 
   async function handleCancelar(id) {
     setMensajeError("");
+    setCargandoAccion(`cancelar-${id}`);
     const res = await cancelarTurno(id);
     if (res?.error) setMensajeError(res.error);
+    setCargandoAccion(null);
   }
 
   async function handleReprogramar(id) {
     setMensajeError("");
+    setCargandoAccion(`reprogramar-${id}`);
     const res = await reprogramarTurno(id);
     if (res?.error) setMensajeError(res.error);
+    setCargandoAccion(null);
+  }
+
+  async function handleEliminarHorario(id) {
+    setCargandoAccion(`horario-${id}`);
+    await eliminarHorario(id);
+    setCargandoAccion(null);
   }
 
   function formatFecha(fecha) {
@@ -130,16 +150,18 @@ export default function AdminPage() {
                     {!r.aprobada && (
                       <button
                         onClick={() => handleAprobarResena(r.id)}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white text-sm py-1.5 rounded-lg transition"
+                        disabled={!!cargandoAccion}
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white text-sm py-1.5 rounded-lg transition disabled:opacity-40"
                       >
-                        Aprobar
+                        {cargandoAccion === `aprobar-${r.id}` ? "Aprobando..." : "Aprobar"}
                       </button>
                     )}
                     <button
                       onClick={() => handleEliminarResena(r.id)}
-                      className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 text-sm py-1.5 rounded-lg border border-red-100 transition"
+                      disabled={!!cargandoAccion}
+                      className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 text-sm py-1.5 rounded-lg border border-red-100 transition disabled:opacity-40"
                     >
-                      Eliminar
+                      {cargandoAccion === `eliminarResena-${r.id}` ? "Eliminando..." : "Eliminar"}
                     </button>
                   </div>
                 </div>
@@ -235,22 +257,25 @@ export default function AdminPage() {
                       {t.pago !== "recibido" && (
                         <button
                           onClick={() => handleConfirmarPago(t.id)}
-                          className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm py-1.5 rounded-lg transition border border-blue-100"
+                          disabled={!!cargandoAccion}
+                          className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm py-1.5 rounded-lg transition border border-blue-100 disabled:opacity-40"
                         >
-                          Marcar pago recibido
+                          {cargandoAccion === `pago-${t.id}` ? "Confirmando..." : "Marcar pago recibido"}
                         </button>
                       )}
                       <button
                         onClick={() => handleReprogramar(t.id)}
-                        className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-600 text-sm py-1.5 rounded-lg transition border border-amber-100"
+                        disabled={!!cargandoAccion}
+                        className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-600 text-sm py-1.5 rounded-lg transition border border-amber-100 disabled:opacity-40"
                       >
-                        Reprogramar
+                        {cargandoAccion === `reprogramar-${t.id}` ? "Reprogramando..." : "Reprogramar"}
                       </button>
                       <button
                         onClick={() => handleCancelar(t.id)}
-                        className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 text-sm py-1.5 rounded-lg transition border border-red-100"
+                        disabled={!!cargandoAccion}
+                        className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 text-sm py-1.5 rounded-lg transition border border-red-100 disabled:opacity-40"
                       >
-                        Cancelar
+                        {cargandoAccion === `cancelar-${t.id}` ? "Cancelando..." : "Cancelar"}
                       </button>
                     </div>
                   )}
@@ -295,9 +320,10 @@ export default function AdminPage() {
               </div>
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition"
+                disabled={cargandoHorario}
+                className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition disabled:opacity-40"
               >
-                Agregar
+                {cargandoHorario ? "Agregando..." : "Agregar"}
               </button>
             </form>
 
@@ -313,10 +339,11 @@ export default function AdminPage() {
                       {formatFecha(h.fecha)} — {h.hora.slice(0, 5)} hs
                     </p>
                     <button
-                      onClick={() => eliminarHorario(h.id)}
-                      className="text-xs text-red-400 hover:text-red-600 transition"
+                      onClick={() => handleEliminarHorario(h.id)}
+                      disabled={!!cargandoAccion}
+                      className="text-xs text-red-400 hover:text-red-600 transition disabled:opacity-40"
                     >
-                      Eliminar
+                      {cargandoAccion === `horario-${h.id}` ? "Eliminando..." : "Eliminar"}
                     </button>
                   </div>
                 ))
