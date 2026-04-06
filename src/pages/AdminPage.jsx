@@ -1,24 +1,25 @@
 import { useState, useEffect } from "react";
 import { useTurnos } from "../context/TurnosContext";
 import { getTodasResenas, aprobarResena, eliminarResena } from "../services/api";
-import GeneradorHorarios from "../components/GeneradorHorarios";
+import DisponibilidadSemanal from "../components/DisponibilidadSemanal";
 import AlumnosPage from "./AlumnosPage";
 
 
 export default function AdminPage() {
-  const { turnos, horarios, stats, token, agregarHorario, eliminarHorario, cancelarTurno, reprogramarTurno, confirmarPago, logout } = useTurnos();
-  const [form, setForm] = useState({ fecha: "", hora: "" });
+  const { turnos, stats, token, cancelarTurno, reprogramarTurno, confirmarPago, logout } = useTurnos();
   const [vista, setVista] = useState("dashboard");
   const [mensajeError, setMensajeError] = useState("");
   const [resenas, setResenas] = useState([]);
-  const [mostrarGenerador, setMostrarGenerador] = useState(false);
+  const [cargandoAccion, setCargandoAccion] = useState(null);
 
   useEffect(() => {
     if (token) cargarResenas();
   }, [token]);
 
   async function handleConfirmarPago(id) {
+    setCargandoAccion(`pago-${id}`);
     await confirmarPago(id);
+    setCargandoAccion(null);
   }
 
   async function cargarResenas() {
@@ -27,41 +28,39 @@ export default function AdminPage() {
   }
 
   async function handleAprobarResena(id) {
+    setCargandoAccion(`aprobar-${id}`);
     await aprobarResena(id, token);
     await cargarResenas();
+    setCargandoAccion(null);
   }
 
   async function handleEliminarResena(id) {
+    setCargandoAccion(`eliminarResena-${id}`);
     await eliminarResena(id, token);
     await cargarResenas();
-  }
-
-  async function handleAgregarHorario(e) {
-    e.preventDefault();
-    if (!form.fecha || !form.hora) return;
-    await agregarHorario(form);
-    setForm({ fecha: "", hora: "" });
+    setCargandoAccion(null);
   }
 
   async function handleCancelar(id) {
     setMensajeError("");
+    setCargandoAccion(`cancelar-${id}`);
     const res = await cancelarTurno(id);
     if (res?.error) setMensajeError(res.error);
+    setCargandoAccion(null);
   }
 
   async function handleReprogramar(id) {
     setMensajeError("");
+    setCargandoAccion(`reprogramar-${id}`);
     const res = await reprogramarTurno(id);
     if (res?.error) setMensajeError(res.error);
+    setCargandoAccion(null);
   }
 
   function formatFecha(fecha) {
     const [year, month, day] = fecha.split('T')[0].split('-');
     return `${day}/${month}/${year}`;
   }
-
-  const confirmados = turnos.filter(t => t.estado === "confirmado");
-  const cancelados = turnos.filter(t => t.estado === "cancelado");
 
   const estadoColor = {
     confirmado: "bg-green-100 text-green-700",
@@ -130,16 +129,18 @@ export default function AdminPage() {
                     {!r.aprobada && (
                       <button
                         onClick={() => handleAprobarResena(r.id)}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white text-sm py-1.5 rounded-lg transition"
+                        disabled={!!cargandoAccion}
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white text-sm py-1.5 rounded-lg transition disabled:opacity-40"
                       >
-                        Aprobar
+                        {cargandoAccion === `aprobar-${r.id}` ? "Aprobando..." : "Aprobar"}
                       </button>
                     )}
                     <button
                       onClick={() => handleEliminarResena(r.id)}
-                      className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 text-sm py-1.5 rounded-lg border border-red-100 transition"
+                      disabled={!!cargandoAccion}
+                      className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 text-sm py-1.5 rounded-lg border border-red-100 transition disabled:opacity-40"
                     >
-                      Eliminar
+                      {cargandoAccion === `eliminarResena-${r.id}` ? "Eliminando..." : "Eliminar"}
                     </button>
                   </div>
                 </div>
@@ -235,22 +236,25 @@ export default function AdminPage() {
                       {t.pago !== "recibido" && (
                         <button
                           onClick={() => handleConfirmarPago(t.id)}
-                          className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm py-1.5 rounded-lg transition border border-blue-100"
+                          disabled={!!cargandoAccion}
+                          className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm py-1.5 rounded-lg transition border border-blue-100 disabled:opacity-40"
                         >
-                          Marcar pago recibido
+                          {cargandoAccion === `pago-${t.id}` ? "Confirmando..." : "Marcar pago recibido"}
                         </button>
                       )}
                       <button
                         onClick={() => handleReprogramar(t.id)}
-                        className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-600 text-sm py-1.5 rounded-lg transition border border-amber-100"
+                        disabled={!!cargandoAccion}
+                        className="flex-1 bg-amber-50 hover:bg-amber-100 text-amber-600 text-sm py-1.5 rounded-lg transition border border-amber-100 disabled:opacity-40"
                       >
-                        Reprogramar
+                        {cargandoAccion === `reprogramar-${t.id}` ? "Reprogramando..." : "Reprogramar"}
                       </button>
                       <button
                         onClick={() => handleCancelar(t.id)}
-                        className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 text-sm py-1.5 rounded-lg transition border border-red-100"
+                        disabled={!!cargandoAccion}
+                        className="flex-1 bg-red-50 hover:bg-red-100 text-red-500 text-sm py-1.5 rounded-lg transition border border-red-100 disabled:opacity-40"
                       >
-                        Cancelar
+                        {cargandoAccion === `cancelar-${t.id}` ? "Cancelando..." : "Cancelar"}
                       </button>
                     </div>
                   )}
@@ -261,68 +265,7 @@ export default function AdminPage() {
         )}
 
         {vista === "horarios" && (
-          <div className="space-y-4">
-
-            <button
-              onClick={() => setMostrarGenerador(!mostrarGenerador)}
-              className="w-full border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-600 text-sm font-medium py-2.5 rounded-xl transition"
-            >
-              {mostrarGenerador ? "Ocultar generador automático" : "Generar horarios automáticamente"}
-            </button>
-
-            {mostrarGenerador && (
-              <GeneradorHorarios onCerrar={() => setMostrarGenerador(false)} />
-            )}
-
-            <form onSubmit={handleAgregarHorario} className="bg-white border border-gray-100 rounded-xl p-4 flex gap-3 items-end">
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
-                <input
-                  type="date"
-                  value={form.fecha}
-                  onChange={e => setForm({ ...form, fecha: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Hora</label>
-                <input
-                  type="time"
-                  value={form.hora}
-                  onChange={e => setForm({ ...form, hora: e.target.value })}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition"
-              >
-                Agregar
-              </button>
-            </form>
-
-            <div className="space-y-2">
-              {horarios.length === 0 ? (
-                <div className="bg-white border border-gray-100 rounded-xl p-6 text-center">
-                  <p className="text-gray-400 text-sm">No hay horarios cargados.</p>
-                </div>
-              ) : (
-                horarios.map(h => (
-                  <div key={h.id} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center justify-between">
-                    <p className="text-sm text-gray-700">
-                      {formatFecha(h.fecha)} — {h.hora.slice(0, 5)} hs
-                    </p>
-                    <button
-                      onClick={() => eliminarHorario(h.id)}
-                      className="text-xs text-red-400 hover:text-red-600 transition"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
+          <DisponibilidadSemanal />
         )}
 
         {vista === "alumnos" && <AlumnosPage />}

@@ -11,17 +11,29 @@ const DIAS = [
   { label: "Domingo", value: 0 },
 ];
 
-const MESES = [
-  { label: "Abril 2026", desde: "2026-04-01", hasta: "2026-04-30" },
-  { label: "Mayo 2026", desde: "2026-05-01", hasta: "2026-05-31" },
-  { label: "Junio 2026", desde: "2026-06-01", hasta: "2026-06-30" },
-  { label: "Julio 2026", desde: "2026-07-01", hasta: "2026-07-31" },
-  { label: "Agosto 2026", desde: "2026-08-01", hasta: "2026-08-31" },
-  { label: "Septiembre 2026", desde: "2026-09-01", hasta: "2026-09-30" },
-  { label: "Octubre 2026", desde: "2026-10-01", hasta: "2026-10-31" },
-  { label: "Noviembre 2026", desde: "2026-11-01", hasta: "2026-11-30" },
-  { label: "Diciembre 2026", desde: "2026-12-01", hasta: "2026-12-31" },
+const NOMBRES_MESES = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
+
+function generarMeses(cantidad = 12) {
+  const meses = [];
+  const hoy = new Date();
+  for (let i = 0; i < cantidad; i++) {
+    const fecha = new Date(hoy.getFullYear(), hoy.getMonth() + i, 1);
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, "0");
+    const ultimoDia = new Date(year, fecha.getMonth() + 1, 0).getDate();
+    meses.push({
+      label: `${NOMBRES_MESES[fecha.getMonth()]} ${year}`,
+      desde: `${year}-${month}-01`,
+      hasta: `${year}-${month}-${String(ultimoDia).padStart(2, "0")}`,
+    });
+  }
+  return meses;
+}
+
+const MESES = generarMeses(12);
 
 export default function GeneradorHorarios({ onCerrar }) {
   const { generarHorariosAutomaticos } = useTurnos();

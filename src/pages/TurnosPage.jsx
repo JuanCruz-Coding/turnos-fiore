@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { es } from "date-fns/locale";
@@ -6,7 +6,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useTurnos } from "../context/TurnosContext";
 import Nav from "../components/landing/Nav";
 import Footer from "../components/landing/Footer";
-import { crearPreferenciaPago } from "../services/api";
+import { getSlots, crearPreferenciaPago } from "../services/api";
 
 const localizer = dateFnsLocalizer({
   format,
@@ -17,7 +17,9 @@ const localizer = dateFnsLocalizer({
 });
 
 export default function TurnosPage() {
-  const { horarios, solicitarTurno } = useTurnos();
+  const { solicitarTurno } = useTurnos();
+  const [slots, setSlots] = useState([]);
+  const [cargandoSlots, setCargandoSlots] = useState(true);
   const [form, setForm] = useState({ nombre: "", email: "", whatsapp: "", dni: "", nivel: "" });
   const [horarioSeleccionado, setHorarioSeleccionado] = useState(null);
   const [enviado, setEnviado] = useState(false);
@@ -27,12 +29,23 @@ export default function TurnosPage() {
   const [fecha, setFecha] = useState(new Date());
   const [vista, setVista] = useState("month");
 
-  const eventos = horarios.map(h => ({
-    id: h.id,
-    title: `${h.hora.slice(0, 5)} hs`,
-    start: new Date(`${h.fecha.split('T')[0]}T${h.hora}`),
-    end: new Date(`${h.fecha.split('T')[0]}T${h.hora}`),
-    resource: h,
+  useEffect(() => {
+    cargarSlots();
+  }, []);
+
+  async function cargarSlots() {
+    setCargandoSlots(true);
+    const data = await getSlots();
+    setSlots(Array.isArray(data) ? data : []);
+    setCargandoSlots(false);
+  }
+
+  const eventos = slots.map((s, idx) => ({
+    id: idx,
+    title: `${s.hora.slice(0, 5)} hs`,
+    start: new Date(`${s.fecha}T${s.hora}`),
+    end: new Date(`${s.fecha}T${s.hora}`),
+    resource: s,
   }));
 
   function handleSelectEvento(evento) {
@@ -55,56 +68,67 @@ export default function TurnosPage() {
       return;
     }
     setCargando(true);
-    await solicitarTurno({
+    const res = await solicitarTurno({
       nombre: form.nombre,
       email: form.email,
       whatsapp: form.whatsapp,
       dni: form.dni,
       nivel: form.nivel,
-      horario_id: horarioSeleccionado.id,
       fecha: horarioSeleccionado.fecha,
       hora: horarioSeleccionado.hora,
     });
+    setCargando(false);
+
+    if (res?.error) {
+      setError(res.error);
+      return;
+    }
+
     setEnviado(true);
     setError("");
-    setCargando(false);
-    setForm({ nombre: "", email: "", nivel: "" });
+    setForm({ nombre: "", email: "", whatsapp: "", dni: "", nivel: "" });
+    // Refrescar slots para que el reservado desaparezca del calendario
+    cargarSlots();
   }
 
   async function handlePagarMP() {
-  if (!form.nombre || !form.email || !form.whatsapp || !form.dni || !form.nivel) {
-    setError("Completá todos los campos antes de pagar.");
-    return;
+    if (!form.nombre || !form.email || !form.whatsapp || !form.dni || !form.nivel) {
+      setError("Completá todos los campos antes de pagar.");
+      return;
+    }
+    setCargando(true);
+
+    const resTurno = await solicitarTurno({
+      nombre: form.nombre,
+      email: form.email,
+      whatsapp: form.whatsapp,
+      dni: form.dni,
+      nivel: form.nivel,
+      fecha: horarioSeleccionado.fecha,
+      hora: horarioSeleccionado.hora,
+    });
+
+    if (resTurno?.error) {
+      setCargando(false);
+      setError(resTurno.error);
+      return;
+    }
+
+    const data = await crearPreferenciaPago({
+      nombre: form.nombre,
+      email: form.email,
+      fecha: horarioSeleccionado.fecha,
+      hora: horarioSeleccionado.hora,
+    });
+
+    setCargando(false);
+
+    if (data.init_point) {
+      window.location.href = data.init_point;
+    } else {
+      setError("Error al conectar con Mercado Pago. Intentá por transferencia.");
+    }
   }
-  setCargando(true);
-
-  await solicitarTurno({
-    nombre: form.nombre,
-    email: form.email,
-    whatsapp: form.whatsapp,
-    dni: form.dni,
-    nivel: form.nivel,
-    horario_id: horarioSeleccionado.id,
-    fecha: horarioSeleccionado.fecha,
-    hora: horarioSeleccionado.hora,
-  });
-
-  const data = await crearPreferenciaPago({
-    nombre: form.nombre,
-    email: form.email,
-    horario_id: horarioSeleccionado.id,
-    fecha: horarioSeleccionado.fecha,
-    hora: horarioSeleccionado.hora,
-  });
-
-  setCargando(false);
-
-  if (data.init_point) {
-    window.location.href = data.init_point;
-  } else {
-    setError("Error al conectar con Mercado Pago. Intentá por transferencia.");
-  }
-}
 
   return (
     <div>
@@ -118,40 +142,46 @@ export default function TurnosPage() {
           </div>
 
           <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-            <Calendar
-              localizer={localizer}
-              events={eventos}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: 600 }}
-              onSelectEvent={handleSelectEvento}
-              views={["month", "week", "day"]}
-              view={vista}
-              onView={setVista}
-              date={fecha}
-              onNavigate={setFecha}
-              culture="es"
-              messages={{
-                next: "Siguiente",
-                previous: "Anterior",
-                today: "Hoy",
-                month: "Mes",
-                week: "Semana",
-                day: "Día",
-                noEventsInRange: "No hay horarios disponibles.",
-              }}
-              eventPropGetter={() => ({
-                style: {
-                  backgroundColor: "#3b82f6",
-                  borderRadius: "6px",
-                  border: "none",
-                  fontSize: "12px",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                  padding: "2px 6px",
-                }
-              })}
-            />
+            {cargandoSlots ? (
+              <div className="flex items-center justify-center" style={{ height: 600 }}>
+                <p className="text-gray-400 text-sm">Cargando horarios disponibles...</p>
+              </div>
+            ) : (
+              <Calendar
+                localizer={localizer}
+                events={eventos}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 600 }}
+                onSelectEvent={handleSelectEvento}
+                views={["month", "week", "day"]}
+                view={vista}
+                onView={setVista}
+                date={fecha}
+                onNavigate={setFecha}
+                culture="es"
+                messages={{
+                  next: "Siguiente",
+                  previous: "Anterior",
+                  today: "Hoy",
+                  month: "Mes",
+                  week: "Semana",
+                  day: "Día",
+                  noEventsInRange: "No hay horarios disponibles.",
+                }}
+                eventPropGetter={() => ({
+                  style: {
+                    backgroundColor: "#3b82f6",
+                    borderRadius: "6px",
+                    border: "none",
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    padding: "2px 6px",
+                  }
+                })}
+              />
+            )}
           </div>
 
         </div>
@@ -254,15 +284,6 @@ export default function TurnosPage() {
                       <option value="Grupo">Quiero armar un grupo</option>
                     </select>
                   </div>
-
-                  {form.horarioId && horarioSeleccionado && (
-                    <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3">
-                      <p className="text-xs text-blue-400 mb-0.5">Horario seleccionado</p>
-                      <p className="text-sm font-medium text-blue-700 capitalize">
-                        {formatFecha(horarioSeleccionado.fecha)} — {horarioSeleccionado.hora.slice(0, 5)} hs
-                      </p>
-                    </div>
-                  )}
 
                   {error && <p className="text-red-500 text-sm">{error}</p>}
 

@@ -1,170 +1,328 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-export async function login(usuario, password) {
-  const res = await fetch(`${BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ usuario, password }),
-  });
+async function handleResponse(res) {
+  if (!res.ok) {
+    try {
+      const body = await res.json();
+      return { error: body.error || body.message || `Error ${res.status}` };
+    } catch {
+      return { error: `Error ${res.status}` };
+    }
+  }
   return res.json();
+}
+
+export async function login(usuario, password) {
+  try {
+    const res = await fetch(`${BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario, password }),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function getHorarios() {
-  const res = await fetch(`${BASE_URL}/horarios`);
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/horarios`);
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function agregarHorario(horario, token) {
-  const res = await fetch(`${BASE_URL}/horarios`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(horario),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/horarios`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(horario),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function eliminarHorario(id, token) {
-  const res = await fetch(`${BASE_URL}/horarios/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/horarios/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function getTurnos(token) {
-  const res = await fetch(`${BASE_URL}/turnos`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/turnos`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function getStats(token) {
-  const res = await fetch(`${BASE_URL}/turnos/stats`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/turnos/stats`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function solicitarTurno(turno) {
-  const res = await fetch(`${BASE_URL}/turnos`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(turno),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/turnos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(turno),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function cancelarTurno(id, token) {
-  const res = await fetch(`${BASE_URL}/turnos/${id}/cancelar`, {
-    method: "PATCH",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/turnos/${id}/cancelar`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function reprogramarTurno(id, token) {
-  const res = await fetch(`${BASE_URL}/turnos/${id}/reprogramar`, {
-    method: "PATCH",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/turnos/${id}/reprogramar`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function getResenas() {
-  const res = await fetch(`${BASE_URL}/resenas`);
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/resenas`);
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function getTodasResenas(token) {
-  const res = await fetch(`${BASE_URL}/resenas/todas`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/resenas/todas`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function crearResena(resena) {
-  const res = await fetch(`${BASE_URL}/resenas`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(resena),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/resenas`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(resena),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function aprobarResena(id, token) {
-  const res = await fetch(`${BASE_URL}/resenas/${id}/aprobar`, {
-    method: "PATCH",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/resenas/${id}/aprobar`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function eliminarResena(id, token) {
-  const res = await fetch(`${BASE_URL}/resenas/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/resenas/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function generarHorarios(datos, token) {
-  const res = await fetch(`${BASE_URL}/horarios/generar`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(datos),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/horarios/generar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function getAlumnos(token) {
-  const res = await fetch(`${BASE_URL}/alumnos`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/alumnos`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function getAlumno(id, token) {
-  const res = await fetch(`${BASE_URL}/alumnos/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/alumnos/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function actualizarNotas(id, notas, token) {
-  const res = await fetch(`${BASE_URL}/alumnos/${id}/notas`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ notas }),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/alumnos/${id}/notas`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ notas }),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function confirmarPago(id, token) {
-  const res = await fetch(`${BASE_URL}/turnos/${id}/pago`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ pago: "recibido" }),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/turnos/${id}/pago`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ pago: "recibido" }),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
 
 export async function crearPreferenciaPago(datos) {
-  const res = await fetch(`${BASE_URL}/pagos/crear-preferencia`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datos),
-  });
-  return res.json();
+  try {
+    const res = await fetch(`${BASE_URL}/pagos/crear-preferencia`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+// ─── Disponibilidad recurrente ────────────────────────────────────────────────
+
+export async function getSlots() {
+  try {
+    const res = await fetch(`${BASE_URL}/horarios/slots`);
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function getDisponibilidad(token) {
+  try {
+    const res = await fetch(`${BASE_URL}/disponibilidad`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function crearDisponibilidad(regla, token) {
+  try {
+    const res = await fetch(`${BASE_URL}/disponibilidad`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(regla),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function eliminarDisponibilidad(id, token) {
+  try {
+    const res = await fetch(`${BASE_URL}/disponibilidad/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function actualizarDisponibilidad(id, datos, token) {
+  try {
+    const res = await fetch(`${BASE_URL}/disponibilidad/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(datos),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
 }
