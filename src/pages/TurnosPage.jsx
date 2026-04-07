@@ -267,20 +267,11 @@ export default function TurnosPage() {
 
                   <div className="space-y-2 pt-1">
                     <button
-                      type="button"
-                      onClick={handlePagarMP}
-                      disabled={cargando}
-                      className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors duration-200 disabled:opacity-40 flex items-center justify-center gap-2"
-                    >
-                      <span>Pagar con Mercado Pago</span>
-                      <span className="text-xs bg-blue-400 px-2 py-0.5 rounded-full">Recomendado</span>
-                    </button>
-                    <button
                       type="submit"
                       disabled={cargando}
-                      className="w-full border border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500 text-gray-600 dark:text-gray-300 font-medium py-2.5 rounded-lg text-sm transition-colors duration-200 disabled:opacity-40"
+                      className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors duration-200 disabled:opacity-40"
                     >
-                      Pagar por transferencia
+                      Confirmar reserva
                     </button>
                   </div>
                 </form>
