@@ -223,11 +223,11 @@ export default function TurnosPage() {
 
       {panelAbierto && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 overflow-y-auto"
           style={{ background: "rgba(0,0,0,0.5)" }}
           onClick={(e) => { if (e.target === e.currentTarget) { setPanelAbierto(false); setPasoPayPal(false); } }}
         >
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-100 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-100 dark:border-gray-800 my-auto">
 
             {enviado ? (
               <div className="text-center py-4">
