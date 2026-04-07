@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { es } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useTurnos } from "../context/TurnosContext";
 import Nav from "../components/landing/Nav";
 import Footer from "../components/landing/Footer";
-import { getSlots, crearPreferenciaPago } from "../services/api";
+import { getSlots, crearPreferenciaPago, crearOrdenPayPal, capturarOrdenPayPal } from "../services/api";
 
 const localizer = dateFnsLocalizer({
   format,
@@ -28,6 +29,9 @@ export default function TurnosPage() {
   const [panelAbierto, setPanelAbierto] = useState(false);
   const [fecha, setFecha] = useState(new Date());
   const [vista, setVista] = useState("month");
+  const [pasoPayPal, setPasoPayPal] = useState(false);
+  const horarioPayPalRef = useRef(null);
+  const formPayPalRef = useRef(null);
 
   useEffect(() => {
     cargarSlots();
@@ -53,6 +57,7 @@ export default function TurnosPage() {
     setPanelAbierto(true);
     setError("");
     setEnviado(false);
+    setPasoPayPal(false);
   }
 
   function formatFecha(fecha) {
@@ -88,6 +93,32 @@ export default function TurnosPage() {
     setError("");
     setForm({ nombre: "", email: "", whatsapp: "", dni: "", nivel: "" });
     cargarSlots();
+  }
+
+  async function handlePrepararPayPal() {
+    if (!form.nombre || !form.email || !form.whatsapp || !form.dni || !form.nivel) {
+      setError("Completá todos los campos antes de pagar.");
+      return;
+    }
+    setCargando(true);
+    const resTurno = await solicitarTurno({
+      nombre: form.nombre,
+      email: form.email,
+      whatsapp: form.whatsapp,
+      dni: form.dni,
+      nivel: form.nivel,
+      fecha: horarioSeleccionado.fecha,
+      hora: horarioSeleccionado.hora,
+    });
+    setCargando(false);
+    if (resTurno?.error) {
+      setError(resTurno.error);
+      return;
+    }
+    horarioPayPalRef.current = horarioSeleccionado;
+    formPayPalRef.current = { ...form };
+    setError("");
+    setPasoPayPal(true);
   }
 
   async function handlePagarMP() {
@@ -133,6 +164,7 @@ export default function TurnosPage() {
   const labelClass = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
 
   return (
+  <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "test", currency: "USD" }}>
     <div className="dark:bg-gray-950">
       <Nav />
       <main className="min-h-screen bg-blue-50 dark:bg-gray-950 py-12 px-6">
@@ -193,7 +225,7 @@ export default function TurnosPage() {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
           style={{ background: "rgba(0,0,0,0.5)" }}
-          onClick={(e) => { if (e.target === e.currentTarget) setPanelAbierto(false); }}
+          onClick={(e) => { if (e.target === e.currentTarget) { setPanelAbierto(false); setPasoPayPal(false); } }}
         >
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-100 dark:border-gray-800">
 
@@ -229,7 +261,7 @@ export default function TurnosPage() {
                     )}
                   </div>
                   <button
-                    onClick={() => setPanelAbierto(false)}
+                    onClick={() => { setPanelAbierto(false); setPasoPayPal(false); }}
                     className="text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 text-2xl leading-none transition-colors duration-200"
                   >
                     ×
@@ -271,8 +303,66 @@ export default function TurnosPage() {
                       disabled={cargando}
                       className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors duration-200 disabled:opacity-40"
                     >
-                      Confirmar reserva
+                      {cargando ? "Enviando..." : "Confirmar reserva"}
                     </button>
+
+                    {!pasoPayPal && (
+                      <>
+                        <div className="flex items-center gap-2 py-1">
+                          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
+                          <span className="text-xs text-gray-400">o pagá ahora con</span>
+                          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handlePrepararPayPal}
+                          disabled={cargando}
+                          className="w-full bg-[#FFC439] hover:bg-[#f0b72f] active:bg-[#e0aa2a] text-[#003087] font-bold py-2.5 rounded-lg text-sm transition-colors duration-200 disabled:opacity-40 flex items-center justify-center gap-2"
+                        >
+                          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
+                          </svg>
+                          PayPal
+                        </button>
+                      </>
+                    )}
+
+                    {pasoPayPal && (
+                      <div className="pt-1">
+                        <p className="text-xs text-center text-gray-400 dark:text-gray-500 mb-3">
+                          Completá el pago con tu cuenta de PayPal
+                        </p>
+                        <PayPalButtons
+                          style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
+                          createOrder={async () => {
+                            const data = await crearOrdenPayPal({
+                              nombre: formPayPalRef.current.nombre,
+                              email: formPayPalRef.current.email,
+                              fecha: horarioPayPalRef.current.fecha,
+                              hora: horarioPayPalRef.current.hora,
+                            });
+                            if (data?.error) throw new Error(data.error);
+                            return data.orderID;
+                          }}
+                          onApprove={async (data) => {
+                            setCargando(true);
+                            const result = await capturarOrdenPayPal({ orderID: data.orderID });
+                            setCargando(false);
+                            if (result?.success) {
+                              window.location.href = "/turnos/pago-exitoso";
+                            } else {
+                              setError("El pago no pudo completarse. Intentá de nuevo.");
+                              setPasoPayPal(false);
+                            }
+                          }}
+                          onError={() => {
+                            setError("Ocurrió un error con PayPal. Intentá de nuevo.");
+                            setPasoPayPal(false);
+                          }}
+                          onCancel={() => setPasoPayPal(false)}
+                        />
+                      </div>
+                    )}
                   </div>
                 </form>
               </>
@@ -284,5 +374,6 @@ export default function TurnosPage() {
 
       <Footer />
     </div>
+  </PayPalScriptProvider>
   );
 }

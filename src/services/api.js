@@ -248,6 +248,32 @@ export async function confirmarPago(id, token) {
   }
 }
 
+export async function crearOrdenPayPal(datos) {
+  try {
+    const res = await fetch(`${BASE_URL}/pagos/paypal/crear-orden`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function capturarOrdenPayPal(datos) {
+  try {
+    const res = await fetch(`${BASE_URL}/pagos/paypal/capturar-orden`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(datos),
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
 export async function crearPreferenciaPago(datos) {
   try {
     const res = await fetch(`${BASE_URL}/pagos/crear-preferencia`, {
