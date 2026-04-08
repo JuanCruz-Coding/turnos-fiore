@@ -298,21 +298,23 @@ export default function TurnosPage() {
                   {error && <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>}
 
                   <div className="space-y-2 pt-1">
-                    <button
-                      type="submit"
-                      disabled={cargando}
-                      className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors duration-200 disabled:opacity-40"
-                    >
-                      {cargando ? "Enviando..." : "Confirmar reserva"}
-                    </button>
 
                     {!pasoPayPal && (
                       <>
-                        <div className="flex items-center gap-2 py-1">
-                          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
-                          <span className="text-xs text-gray-400">o pagá ahora con</span>
-                          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
-                        </div>
+                        {/* Mercado Pago */}
+                        <button
+                          type="button"
+                          onClick={handlePagarMP}
+                          disabled={cargando}
+                          className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-sm transition-colors duration-200 disabled:opacity-40 flex items-center justify-center gap-2"
+                        >
+                          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.33c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L6.26 14.4l-2.95-.924c-.64-.203-.654-.64.136-.954l11.526-4.443c.537-.194 1.006.131.59.169z"/>
+                          </svg>
+                          Pagar con Mercado Pago
+                        </button>
+
+                        {/* PayPal */}
                         <button
                           type="button"
                           onClick={handlePrepararPayPal}
@@ -323,6 +325,23 @@ export default function TurnosPage() {
                             <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.471z"/>
                           </svg>
                           PayPal
+                        </button>
+
+                        {/* Transferencia */}
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
+                          <span className="text-xs text-gray-400">o</span>
+                          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
+                        </div>
+                        <button
+                          type="submit"
+                          disabled={cargando}
+                          className="w-full border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-medium py-2.5 rounded-lg text-sm transition-colors duration-200 disabled:opacity-40 flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75" />
+                          </svg>
+                          {cargando ? "Enviando..." : "Pagar por transferencia"}
                         </button>
                       </>
                     )}
