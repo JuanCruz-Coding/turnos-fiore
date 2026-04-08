@@ -1,4 +1,5 @@
 import { useScrollReveal } from "../../hooks/useScrollReveal";
+import { useState, useEffect } from "react";
 
 const whatsapp = "5493412140785";
 
@@ -54,6 +55,14 @@ export default function Servicios() {
   const [refTitle, visTitle] = useScrollReveal();
   const [refCards, visCards] = useScrollReveal();
   const [refPricing, visPricing] = useScrollReveal();
+  const [esArgentina, setEsArgentina] = useState(true);
+
+  useEffect(() => {
+    fetch("https://ipapi.co/json/")
+      .then(r => r.json())
+      .then(d => setEsArgentina(d.country_code === "AR"))
+      .catch(() => setEsArgentina(true));
+  }, []);
 
   return (
     <section className="py-24 bg-white dark:bg-gray-900" id="servicios">
@@ -93,8 +102,17 @@ export default function Servicios() {
               </p>
               <div className="bg-white dark:bg-gray-800 border border-blue-100 dark:border-blue-800 rounded-xl px-5 py-4 mb-4">
                 <p className="text-xs text-blue-400 mb-1">Precio por hora</p>
-                <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">$15.000</p>
-                <p className="text-xs text-gray-400 mt-1">Pesos argentinos · Pago por transferencia</p>
+                {esArgentina ? (
+                  <>
+                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">$15.000</p>
+                    <p className="text-xs text-gray-400 mt-1">Pesos argentinos · Transferencia o Mercado Pago</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">USD 15</p>
+                    <p className="text-xs text-gray-400 mt-1">Dólares · Pago por PayPal</p>
+                  </>
+                )}
               </div>
             </div>
             <a
