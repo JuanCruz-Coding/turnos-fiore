@@ -86,6 +86,23 @@ export function TurnosProvider({ children }) {
     return res;
   }
 
+  async function eliminarTurno(id) {
+    const res = await api.eliminarTurno(id, token);
+    if (res.error) return res;
+    await cargarTurnos();
+    await cargarStats();
+    return res;
+  }
+
+  async function eliminarAlumno(id) {
+    const res = await api.eliminarAlumno(id, token);
+    if (res.error) return res;
+    await cargarAlumnos();
+    await cargarTurnos();
+    await cargarStats();
+    return res;
+  }
+
   async function actualizarNotas(id, notas) {
     const res = await api.actualizarNotas(id, notas, token);
     await cargarAlumnos();
@@ -112,8 +129,8 @@ export function TurnosProvider({ children }) {
       turnos, horarios, stats, alumnos, token,
       setToken,
       agregarHorario, eliminarHorario,
-      solicitarTurno, cancelarTurno, reprogramarTurno,
-      confirmarPago, actualizarNotas,
+      solicitarTurno, cancelarTurno, reprogramarTurno, eliminarTurno,
+      confirmarPago, actualizarNotas, eliminarAlumno,
       generarHorariosAutomaticos,
       logout
     }}>

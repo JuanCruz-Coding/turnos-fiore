@@ -232,6 +232,30 @@ export async function actualizarNotas(id, notas, token) {
   }
 }
 
+export async function eliminarTurno(id, token) {
+  try {
+    const res = await fetch(`${BASE_URL}/turnos/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
+export async function eliminarAlumno(id, token) {
+  try {
+    const res = await fetch(`${BASE_URL}/alumnos/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return handleResponse(res);
+  } catch {
+    return { error: "No se pudo conectar con el servidor." };
+  }
+}
+
 export async function confirmarPago(id, token) {
   try {
     const res = await fetch(`${BASE_URL}/turnos/${id}/pago`, {

@@ -6,11 +6,12 @@ import AlumnosPage from "./AlumnosPage";
 
 
 export default function AdminPage() {
-  const { turnos, stats, token, cancelarTurno, reprogramarTurno, confirmarPago, logout } = useTurnos();
+  const { turnos, stats, token, cancelarTurno, reprogramarTurno, confirmarPago, eliminarTurno, logout } = useTurnos();
   const [vista, setVista] = useState("dashboard");
   const [mensajeError, setMensajeError] = useState("");
   const [resenas, setResenas] = useState([]);
   const [cargandoAccion, setCargandoAccion] = useState(null);
+  const [confirmarEliminar, setConfirmarEliminar] = useState(null);
 
   useEffect(() => {
     if (token) cargarResenas();
@@ -46,6 +47,13 @@ export default function AdminPage() {
     setCargandoAccion(`cancelar-${id}`);
     const res = await cancelarTurno(id);
     if (res?.error) setMensajeError(res.error);
+    setCargandoAccion(null);
+  }
+
+  async function handleEliminarTurno(id) {
+    setCargandoAccion(`eliminar-${id}`);
+    await eliminarTurno(id);
+    setConfirmarEliminar(null);
     setCargandoAccion(null);
   }
 
@@ -245,33 +253,60 @@ export default function AdminPage() {
                       </span>
                     </div>
                   </div>
-                  {t.estado === "confirmado" && (
-                    <div className="flex gap-2 mt-3 flex-wrap">
-                      {t.pago !== "recibido" && (
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    {t.estado === "confirmado" && t.pago !== "recibido" && (
+                      <button
+                        onClick={() => handleConfirmarPago(t.id)}
+                        disabled={!!cargandoAccion}
+                        className="flex-1 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-sm py-1.5 rounded-lg transition-colors duration-200 border border-blue-100 dark:border-blue-900 disabled:opacity-40"
+                      >
+                        {cargandoAccion === `pago-${t.id}` ? "Confirmando..." : "Marcar pago recibido"}
+                      </button>
+                    )}
+                    {t.estado === "confirmado" && (
+                      <>
                         <button
-                          onClick={() => handleConfirmarPago(t.id)}
+                          onClick={() => handleReprogramar(t.id)}
                           disabled={!!cargandoAccion}
-                          className="flex-1 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-sm py-1.5 rounded-lg transition-colors duration-200 border border-blue-100 dark:border-blue-900 disabled:opacity-40"
+                          className="flex-1 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-sm py-1.5 rounded-lg transition-colors duration-200 border border-amber-100 dark:border-amber-900 disabled:opacity-40"
                         >
-                          {cargandoAccion === `pago-${t.id}` ? "Confirmando..." : "Marcar pago recibido"}
+                          {cargandoAccion === `reprogramar-${t.id}` ? "Reprogramando..." : "Reprogramar"}
                         </button>
-                      )}
+                        <button
+                          onClick={() => handleCancelar(t.id)}
+                          disabled={!!cargandoAccion}
+                          className="flex-1 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 dark:text-red-400 text-sm py-1.5 rounded-lg transition-colors duration-200 border border-red-100 dark:border-red-900 disabled:opacity-40"
+                        >
+                          {cargandoAccion === `cancelar-${t.id}` ? "Cancelando..." : "Cancelar"}
+                        </button>
+                      </>
+                    )}
+                    {confirmarEliminar === t.id ? (
+                      <>
+                        <button
+                          onClick={() => handleEliminarTurno(t.id)}
+                          disabled={!!cargandoAccion}
+                          className="flex-1 bg-red-500 hover:bg-red-600 text-white text-sm py-1.5 rounded-lg transition-colors duration-200 disabled:opacity-40"
+                        >
+                          {cargandoAccion === `eliminar-${t.id}` ? "Eliminando..." : "Sí, eliminar"}
+                        </button>
+                        <button
+                          onClick={() => setConfirmarEliminar(null)}
+                          className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm py-1.5 rounded-lg transition-colors duration-200"
+                        >
+                          Cancelar
+                        </button>
+                      </>
+                    ) : (
                       <button
-                        onClick={() => handleReprogramar(t.id)}
+                        onClick={() => setConfirmarEliminar(t.id)}
                         disabled={!!cargandoAccion}
-                        className="flex-1 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-sm py-1.5 rounded-lg transition-colors duration-200 border border-amber-100 dark:border-amber-900 disabled:opacity-40"
+                        className="bg-gray-100 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-950/30 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 text-sm py-1.5 px-3 rounded-lg transition-colors duration-200 border border-transparent hover:border-red-100 dark:hover:border-red-900 disabled:opacity-40"
                       >
-                        {cargandoAccion === `reprogramar-${t.id}` ? "Reprogramando..." : "Reprogramar"}
+                        Eliminar
                       </button>
-                      <button
-                        onClick={() => handleCancelar(t.id)}
-                        disabled={!!cargandoAccion}
-                        className="flex-1 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 dark:text-red-400 text-sm py-1.5 rounded-lg transition-colors duration-200 border border-red-100 dark:border-red-900 disabled:opacity-40"
-                      >
-                        {cargandoAccion === `cancelar-${t.id}` ? "Cancelando..." : "Cancelar"}
-                      </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               ))
             )}
